@@ -1,7 +1,9 @@
 package juego;
 
+import javax.swing.JOptionPane;
+
 /**
- * Juego Cuatro en LÌnea
+ * Juego Cuatro en L√≠nea
  * 
  * Reglas:
  * 
@@ -11,45 +13,121 @@ package juego;
 public class CuatroEnLinea {
 
 	/**
-	 * pre : 'filas' y 'columnas' son mayores o iguales a 4.
-	 * post: empieza el juego entre el jugador que tiene fichas rojas, identificado como
-	 * 'jugadorRojo' y el jugador que tiene fichas amarillas, identificado como
-	 * 'jugadorAmarillo'. Todo el tablero est· vacÌo.
+	 * pre : 'filas' y 'columnas' son mayores o iguales a 4 y menores o iguales
+	 * a 12. post: empieza el juego entre el jugador que tiene fichas azules,
+	 * identificado como 'jugadorAzul' y el jugador que tiene fichas amarillas,
+	 * identificado como 'jugadorAmarillo'. Todo el tablero est√° vac√≠o.
 	 * 
-	 * @param filas: cantidad de filas que tiene el tablero.
-	 * @param columnas: cantidad de columnas que tiene el tablero.
-	 * @param jugadorRojo: nombre del jugador con fichas rojas.
-	 * @param jugadorAmarillo: nombre del jugador con fichas amarillas.
+	 * @param filas
+	 *            : cantidad de filas que tiene el tablero.
+	 * @param columnas
+	 *            : cantidad de columnas que tiene el tablero.
+	 * @param jugadorAzul
+	 *            : nombre del jugador con fichas rojas.
+	 * @param jugadorAmarillo
+	 *            : nombre del jugador con fichas amarillas.
 	 * 
 	 */
 
 	private Casillero tablero[][];
 
-	private String jugadorRojo;
+	private String errorNombresIguales = "No se puede ingresar dos nombres iguales";
+	private String errorNombresVacios = "No se pueden ingresar dos nombres vacios";
+	private String errorNombreVacioAmarillo = "Por favor ingrese un nombre al jugador oro actualmente (vacio)";
+	private String errorNombreVacioAzul = "Por favor ingrese un nombre al jugador azul actualmente (vacio)";
+	private String errorMaximoFilasYColumnas = "Las dimensiones maximas del tablero son 8x8";
+	private String errorMaximoFilas = "El valor de las filas debe ser menor o igual a 8";
+	private String errorMaximoColumnas = "El valor de las columnas debe ser menor o igual a 8";
+	private String errorMinimoFilasYColumnas = "Las dimensiones minimas del tablero son 4x4";
+	private String errorMinimoFilas = "El valor de la filas debe ser mayor o igual a 4";
+	private String errorMinimoColumnas = "El valor de la columnas debe ser mayor o igual a 4";
+	private String errorFueraDeRango = "No se puede soltar ficha, fuera del tablero";
+	private String jugadorAzul;
 	private String jugadorAmarillo;
-	private String TurnoDelJugador;
+	private String turnoDelJugador;
 	private String ultimoJugadorEnSoltarFicha;
 
 	private int filas;
 	private int columnas;
-	private int ContadorFichasTotalesUsadas;
+	private int contadorFichasTotalesUsadas;
+	private int contadorErrorCasilleroLleno = 0;
 
-	public CuatroEnLinea(int filas, int columnas, String jugadorRojo,
+	public CuatroEnLinea(int filas, int columnas, String jugadorAzul,
 			String jugadorAmarillo) {
 
-		if (filas < 4 || columnas < 4) {
+		if (jugadorAmarillo.equals("") && jugadorAzul.equals("")) {
+
+			JOptionPane.showMessageDialog(null, errorNombresVacios,
+					"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+			throw new Error("nombres vacios");
+		}
+
+		if (jugadorAmarillo.equals("") || jugadorAzul.equals("")) {
+			if (jugadorAmarillo.equals("")) {
+				JOptionPane.showMessageDialog(null, errorNombreVacioAmarillo,
+						"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+				throw new Error("nombre vacio amarillo");
+			}
+			JOptionPane.showMessageDialog(null, errorNombreVacioAzul,
+					"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+			throw new Error("nombre vacio azul");
+		}
+
+		if (jugadorAmarillo.equalsIgnoreCase(jugadorAzul)) {
+
+			JOptionPane.showMessageDialog(null, errorNombresIguales,
+					"Fatal Error", JOptionPane.WARNING_MESSAGE);
+			throw new Error("nombres iguales");
+		}
+
+		if (filas < 4 && columnas < 4) {
+			JOptionPane.showMessageDialog(null, errorMinimoFilasYColumnas,
+					"Fatal Error", JOptionPane.WARNING_MESSAGE);
 			throw new Error(
 					"La cantidad de filas y columnas deben ser iguales o mayores que 4");
 		}
-		
+		if (filas < 4 || columnas < 4) {
+			if (filas < 4) {
+				JOptionPane.showMessageDialog(null, errorMinimoFilas,
+						"Fatal Error", JOptionPane.WARNING_MESSAGE);
+				throw new Error(
+						"La cantidad de filas deben ser iguales o mayores que 4");
+			}
+
+			JOptionPane.showMessageDialog(null, errorMinimoColumnas,
+					"Fatal Error", JOptionPane.WARNING_MESSAGE);
+			throw new Error(
+					"La cantidad de columnas deben ser iguales o mayores que 4");
+
+		}
+		if (filas > 8 && columnas > 8) {
+
+			JOptionPane.showMessageDialog(null, errorMaximoFilasYColumnas,
+					"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+			throw new Error(
+					"El valor de las filas y columnas debe ser menor o igual a 8");
+		}
+
+		if (filas > 8 || columnas > 8) {
+			if (filas > 8) {
+				JOptionPane.showMessageDialog(null, errorMaximoFilas,
+						"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+				throw new Error(
+						"El valor de las filas debe ser menor o igual a 8");
+			}
+			JOptionPane.showMessageDialog(null, errorMaximoColumnas,
+					"Fatal Error!", JOptionPane.WARNING_MESSAGE);
+			throw new Error(
+					"El valor de las columnas debe ser menor o igual a 8");
+		}
 
 		this.filas = filas;
 		this.columnas = columnas;
 		this.jugadorAmarillo = jugadorAmarillo;
-		this.jugadorRojo = jugadorRojo;
+		this.jugadorAzul = jugadorAzul;
 		this.tablero = new Casillero[this.contarFilas()][this.contarColumnas()];
 		this.iniciarTableroVacio();
-		this.TurnoDelJugador = jugadorRojo;
+		this.turnoDelJugador = jugadorAzul;
 	}
 
 	private void iniciarTableroVacio() {
@@ -62,7 +140,7 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * post: devuelve la cantidad m·xima de fichas que se pueden apilar en el
+	 * post: devuelve la cantidad m√°xima de fichas que se pueden apilar en el
 	 * tablero.
 	 */
 	public int contarFilas() {
@@ -71,7 +149,7 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * post: devuelve la cantidad m·xima de fichas que se pueden alinear en el
+	 * post: devuelve la cantidad m√°xima de fichas que se pueden alinear en el
 	 * tablero.
 	 */
 	public int contarColumnas() {
@@ -80,9 +158,9 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * pre : fila est· en el intervalo [1, contarFilas()], columnas est· en el
-	 * intervalo [1, contarColumnas()]. post: indica quÈ ocupa el casillero en
-	 * la posiciÛn dada por fila y columna.
+	 * pre : fila est√° en el intervalo [1, contarFilas()], columnas est√° en el
+	 * intervalo [1, contarColumnas()]. post: indica qu√© ocupa el casillero en
+	 * la posici√≥n dada por fila y columna.
 	 * 
 	 * @param fila
 	 * @param columna
@@ -100,35 +178,46 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * Pre : el juego no terminÛ, columna est·° en el intervalo [1,
-	 * contarColumnas()] y a˙n queda un Casillero.VACIO en la columna indicada.
+	 * Pre : el juego no termin√≥, columna est√°¬° en el intervalo [1,
+	 * contarColumnas()] y a√∫n queda un Casillero.VACIO en la columna indicada.
 	 * Post: deja caer una ficha en la columna indicada.
 	 * 
 	 * @param columna
 	 */
 	public void soltarFicha(int columna) {
-		String JugadorAnterior = this.TurnoDelJugador;
 
-		if (this.termino() || columna < 1 && columna > this.contarColumnas()) {
-			throw new Error("El juego no termino");
-
+		String jugadorAnterior = this.turnoDelJugador;
+		if (this.termino()
+				|| !(columna >= 1 && columna <= this.contarColumnas())) {
+			JOptionPane.showMessageDialog(null, "el juego termino", "error",
+					JOptionPane.WARNING_MESSAGE);
+			throw new Error(
+					"El juego Termino");
+			   
 		}
 
 		Integer casilleroLibre = verificarCasilleroLibreColumna(columna);
 
-		if (casilleroLibre != null) {
+		if (casilleroLibre == null) {
+			contadorErrorCasilleroLleno++;
+			JOptionPane.showMessageDialog(null, errorFueraDeRango, "error",
+					JOptionPane.WARNING_MESSAGE);
+			throw new Error("fuera de rango");
 
-			this.tablero[casilleroLibre - 1][columna - 1] = obtenerCasilleroDelJugadorConTurno();
-			this.TurnoDelJugador = obtenerJugadorEnEspera();
-			this.ultimoJugadorEnSoltarFicha = JugadorAnterior;
-
-			ContadorFichasTotalesUsadas++;
 		}
+		this.tablero[casilleroLibre - 1][columna - 1] = obtenerCasilleroDelJugadorConTurno();
+		this.turnoDelJugador = obtenerJugadorEnEspera();
+		this.ultimoJugadorEnSoltarFicha = jugadorAnterior;
 
+		contadorFichasTotalesUsadas++;
+	}
+
+	public int obtenerContadorErrorCasilleroLleno() {
+		return contadorErrorCasilleroLleno;
 	}
 
 	/**
-	 * post: devuelve la posiciÛn del ˙ltimo casillero VACIO en una columna de
+	 * post: devuelve la posici√≥n del √∫ltimo casillero VACIO en una columna de
 	 * lo contrario devuelve null
 	 */
 	private Integer verificarCasilleroLibreColumna(int columna) {
@@ -147,8 +236,8 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * post: indica si el juego terminÛ porque uno de los jugadores ganÛ o no
-	 * existen casilleros vacÌos.
+	 * post: indica si el juego termin√≥ porque uno de los jugadores gan√≥ o no
+	 * existen casilleros vac√≠os.
 	 */
 	public boolean termino() {
 
@@ -159,7 +248,7 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * post: indica si el juego terminÛ y tiene un ganador.
+	 * post: indica si el juego termin√≥ y tiene un ganador.
 	 */
 	public boolean hayGanador() {
 
@@ -245,7 +334,7 @@ public class CuatroEnLinea {
 	}
 
 	/**
-	 * pre : el juego terminÛ. post: devuelve el nombre del jugador que ganÛ el
+	 * pre : el juego termin√≥. post: devuelve el nombre del jugador que gan√≥ el
 	 * juego.
 	 */
 	public String obtenerGanador() {
@@ -260,20 +349,20 @@ public class CuatroEnLinea {
 	}
 
 	private boolean elTableroTieneCasillerosVacios() {
-		return this.ContadorFichasTotalesUsadas < (this.contarFilas() * this
+		return this.contadorFichasTotalesUsadas < (this.contarFilas() * this
 				.contarColumnas());
 	}
 
 	private String obtenerJugadorEnEspera() {
-		if (TurnoDelJugador == jugadorRojo) {
+		if (turnoDelJugador == jugadorAzul) {
 			return jugadorAmarillo;
 		}
-		return jugadorRojo;
+		return jugadorAzul;
 	}
 
-	private Casillero obtenerCasilleroDelJugadorConTurno() {
-		if (TurnoDelJugador == jugadorRojo) {
-			return Casillero.ROJO;
+	public Casillero obtenerCasilleroDelJugadorConTurno() {
+		if (turnoDelJugador == jugadorAzul) {
+			return Casillero.AZUL;
 
 		}
 
